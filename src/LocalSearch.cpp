@@ -113,7 +113,9 @@ bool LocalSearch::swapLocalSearchFirstRand(Solution& solution, ChronoCPU* timer,
     // Randomize order (using the Random class provided)
     for (int i = 0; i < solution.nClusters - 1; i++) {
         int range = solution.nClusters - i;
+        // FIXED: Ensure offset is always < range to avoid buffer overflow
         int offset = static_cast<int>(random->randp() * range);
+        if (offset >= range) offset = range - 1; // Safety check
         int j = i + offset;
         std::swap(clusterIndices[i], clusterIndices[j]);
     }
@@ -137,19 +139,32 @@ bool LocalSearch::swapLocalSearchFirstRand(Solution& solution, ChronoCPU* timer,
                 }
             }
             
-            // Randomize order of points
-            for (size_t pi = 0; pi < pointsInI.size() - 1; pi++) {
-                size_t range = pointsInI.size() - pi;
-                size_t offset = static_cast<size_t>(random->randp() * range);
-                size_t pj = pi + offset;
-                std::swap(pointsInI[pi], pointsInI[pj]);
+            // Skip if either cluster is empty (shouldn't happen in balanced clustering)
+            if (pointsInI.empty() || pointsInJ.empty()) {
+                continue;
             }
             
-            for (size_t pj = 0; pj < pointsInJ.size() - 1; pj++) {
-                size_t range = pointsInJ.size() - pj;
-                size_t offset = static_cast<size_t>(random->randp() * range);
-                size_t pk = pj + offset;
-                std::swap(pointsInJ[pj], pointsInJ[pk]);
+            // Randomize order of points with proper bounds checking
+            if (pointsInI.size() > 1) {
+                for (size_t pi = 0; pi < pointsInI.size() - 1; pi++) {
+                    size_t range = pointsInI.size() - pi;
+                    // FIXED: Ensure offset is always < range to avoid buffer overflow
+                    size_t offset = static_cast<size_t>(random->randp() * range);
+                    if (offset >= range) offset = range - 1; // Safety check
+                    size_t pj = pi + offset;
+                    std::swap(pointsInI[pi], pointsInI[pj]);
+                }
+            }
+            
+            if (pointsInJ.size() > 1) {
+                for (size_t pj = 0; pj < pointsInJ.size() - 1; pj++) {
+                    size_t range = pointsInJ.size() - pj;
+                    // FIXED: Ensure offset is always < range to avoid buffer overflow
+                    size_t offset = static_cast<size_t>(random->randp() * range);
+                    if (offset >= range) offset = range - 1; // Safety check
+                    size_t pk = pj + offset;
+                    std::swap(pointsInJ[pj], pointsInJ[pk]);
+                }
             }
             
             // Check all point pairs in random order
