@@ -6,6 +6,11 @@ This repository contains a **fully LLM-generated implementation** of the LocalSe
 
 **Objective:** Demonstrate that an LLM can implement state-of-the-art metaheuristics from academic literature with zero human coding intervention.
 
+## LLM Chat that made the Code
+https://gemini.google.com/share/c1d3ab4a6b54
+Claudes attempt (worse performance) 
+https://claude.ai/share/50ac7f73-df99-4c96-a52a-50fa6796053f
+
 **What the LLM Generated:**
 - `LocalSearch.cpp` - Complete local search implementation 
 - `VNS.cpp` - Complete Variable Neighborhood Search implementation
